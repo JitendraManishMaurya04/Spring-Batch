@@ -15,6 +15,7 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
@@ -28,8 +29,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableBatchProcessing
-public class BatchConfig {
+public class CsvToDatabaseBatchConfig {
 	
 	private final JobRepository jobRepo;
 	private final PlatformTransactionManager platformTransactionManager;
@@ -83,7 +83,7 @@ public class BatchConfig {
 	}
 	
 	@Bean 
-	public Step importStep() {
+	public Step csvToDBStep() {
 		return stepBuilderFactory.get("csvImport")
 				.<Student,Student>chunk(csvImportTaskChunkSize)
 				.reader(itemReader())
@@ -96,10 +96,10 @@ public class BatchConfig {
 	}
 	
 	@Bean
-	public Job runJob() {
+	public Job runCsvToDBJob() {
 		return jobBuilderFactory.get("importStudents")
 				.repository(jobRepo)
-				.start(importStep())
+				.start(csvToDBStep())
 				.build();
 	}
 	
