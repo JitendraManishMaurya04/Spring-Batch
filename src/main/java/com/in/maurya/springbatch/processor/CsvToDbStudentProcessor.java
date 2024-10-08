@@ -4,7 +4,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.in.maurya.springbatch.entity.Student;
 
-public class StudentProcessor implements ItemProcessor<Student, Student>{
+public class CsvToDbStudentProcessor implements ItemProcessor<Student, Student>{
 
 	@Override
 	public Student process(Student student) throws Exception {

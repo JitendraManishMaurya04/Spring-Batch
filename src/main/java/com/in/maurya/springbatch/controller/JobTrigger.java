@@ -26,6 +26,7 @@ public class JobTrigger {
 	private final JobLauncher jobLauncher;
 	private final Job runCsvToDBJob;
 	private final Job runDbToCsvJob;
+	private final Job runCsvToCsvJob;
 	
 	@PostMapping("/csvToDb/students")
 	public ResponseEntity<String> importCsvToDbJob() {
@@ -36,6 +37,12 @@ public class JobTrigger {
 	public ResponseEntity<String> extractDbToCsvJob() {
 		return runJob(runDbToCsvJob);
 	}
+	
+	@GetMapping("/csvToCsv/students")
+	public ResponseEntity<String> extractCsvToCsvJob() {
+		return runJob(runCsvToCsvJob);
+	}
+
 
 	private ResponseEntity<String> runJob(Job job) {
 		JobParameters jobParameters = new JobParametersBuilder()

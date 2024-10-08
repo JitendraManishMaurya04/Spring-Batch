@@ -22,7 +22,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.in.maurya.springbatch.entity.Student;
-import com.in.maurya.springbatch.processor.StudentProcessor;
+import com.in.maurya.springbatch.processor.CsvToDbStudentProcessor;
 import com.in.maurya.springbatch.repository.StudentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -43,9 +43,9 @@ public class CsvToDatabaseBatchConfig {
 	private int csvImportTaskThreadSize;
 	
 	@Bean
-	public FlatFileItemReader<Student> itemReader(){
+	public FlatFileItemReader<Student> csvItemReader(){
 		FlatFileItemReader<Student> itemReader = new FlatFileItemReader<>();
-		itemReader.setResource(new FileSystemResource("src/main/resources/students.csv"));
+		itemReader.setResource(new FileSystemResource("src/main/resources/InputFiles/students.csv"));
 		itemReader.setName("csvReader");
 		itemReader.setLinesToSkip(1);
 		itemReader.setLineMapper(lineMapper());
@@ -70,12 +70,12 @@ public class CsvToDatabaseBatchConfig {
 	}
 	
 	@Bean
-	public StudentProcessor processor() {
-		return new StudentProcessor();
+	public CsvToDbStudentProcessor csvToDbProcessor() {
+		return new CsvToDbStudentProcessor();
 	}
 	
 	@Bean
-	public RepositoryItemWriter<Student> itemWriter(){
+	public RepositoryItemWriter<Student> dbItemWriter(){
 		RepositoryItemWriter<Student> itemWriter = new RepositoryItemWriter<>();
 		itemWriter.setRepository(studentRepo);
 		itemWriter.setMethodName("save");
@@ -84,11 +84,11 @@ public class CsvToDatabaseBatchConfig {
 	
 	@Bean 
 	public Step csvToDBStep() {
-		return stepBuilderFactory.get("csvImport")
+		return stepBuilderFactory.get("csvToDBImportStep")
 				.<Student,Student>chunk(csvImportTaskChunkSize)
-				.reader(itemReader())
-				.processor(processor())
-				.writer(itemWriter())
+				.reader(csvItemReader())
+				.processor(csvToDbProcessor())
+				.writer(dbItemWriter())
 				.transactionManager(platformTransactionManager)
 				.repository(jobRepo)
 				.taskExecutor(taskExecutor())
@@ -97,7 +97,7 @@ public class CsvToDatabaseBatchConfig {
 	
 	@Bean
 	public Job runCsvToDBJob() {
-		return jobBuilderFactory.get("importStudents")
+		return jobBuilderFactory.get("csvToDBStudentsJob")
 				.repository(jobRepo)
 				.start(csvToDBStep())
 				.build();

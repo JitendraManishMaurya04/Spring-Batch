@@ -59,7 +59,7 @@ public class DatabaseToCsvBatchConfig {
 
 	@Bean FlatFileItemWriter<Student> csvItemWriter(){
 		FlatFileItemWriter<Student> itemWriter = new FlatFileItemWriter<>();
-		itemWriter.setResource(new FileSystemResource("src/main/resources/StudentExtract.csv"));
+		itemWriter.setResource(new FileSystemResource("src/main/resources/OutputFiles/StudentExtract.csv"));
 		DelimitedLineAggregator<Student> aggregator = new DelimitedLineAggregator<>();
 		BeanWrapperFieldExtractor<Student> fieldExtractor = new BeanWrapperFieldExtractor<>();
 		fieldExtractor.setNames(new String[] {"id","firstname","lastname","age"});
@@ -70,7 +70,7 @@ public class DatabaseToCsvBatchConfig {
 	
 	@Bean 
 	public Step dbToCsvStep() {
-		return stepBuilderFactory.get("dbDataExtract")
+		return stepBuilderFactory.get("dbToCsvDataExtract")
 				.<Student,Student>chunk(csvImportTaskChunkSize)
 				.reader(dbItemReader())
 				.writer(csvItemWriter())
@@ -79,7 +79,7 @@ public class DatabaseToCsvBatchConfig {
 	
 	@Bean
 	public Job runDbToCsvJob() {
-		return jobBuilderFactory.get("extractStudents")
+		return jobBuilderFactory.get("dbToCsExtractStudents")
 				.incrementer(new RunIdIncrementer())
 				.start(dbToCsvStep())
 				.build();
