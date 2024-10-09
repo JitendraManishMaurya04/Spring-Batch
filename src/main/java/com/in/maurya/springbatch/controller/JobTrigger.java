@@ -27,6 +27,7 @@ public class JobTrigger {
 	private final Job runCsvToDBJob;
 	private final Job runDbToCsvJob;
 	private final Job runCsvToCsvJob;
+	private final Job runMultipleCsvToSingleCsvJob;
 	
 	@PostMapping("/csvToDb/students")
 	public ResponseEntity<String> importCsvToDbJob() {
@@ -41,6 +42,11 @@ public class JobTrigger {
 	@GetMapping("/csvToCsv/students")
 	public ResponseEntity<String> extractCsvToCsvJob() {
 		return runJob(runCsvToCsvJob);
+	}
+	
+	@GetMapping("/multipleCsvToSingleCsv/students")
+	public ResponseEntity<String> extractMultipleCsvToSingleCsvJob() {
+		return runJob(runMultipleCsvToSingleCsvJob);
 	}
 
 

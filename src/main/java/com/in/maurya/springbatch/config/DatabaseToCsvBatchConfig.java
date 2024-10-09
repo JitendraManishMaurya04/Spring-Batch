@@ -1,5 +1,7 @@
 package com.in.maurya.springbatch.config;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -11,6 +13,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
+import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
@@ -64,6 +67,12 @@ public class DatabaseToCsvBatchConfig {
 		BeanWrapperFieldExtractor<Student> fieldExtractor = new BeanWrapperFieldExtractor<>();
 		fieldExtractor.setNames(new String[] {"id","firstname","lastname","age"});
 		aggregator.setFieldExtractor(fieldExtractor);
+		itemWriter.setHeaderCallback(new FlatFileHeaderCallback() {
+		    @Override
+		    public void writeHeader(Writer writer) throws IOException {
+		        writer.write("id,firstname,lastname,age");
+		    }
+		});
 		itemWriter.setLineAggregator(aggregator);
 		return itemWriter;
 	}
